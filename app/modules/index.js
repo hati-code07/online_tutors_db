@@ -17,10 +17,11 @@ idle: dbConfig.pool.idle
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-const models = require("./tutorial.model.js")(sequelize, Sequelize);
+const models = require("./goods-group.model.js")(sequelize, Sequelize);
 db.subjects = models.Subject;
 db.tutors = models.Tutor;
 db.courses = models.Course;
 db.students = models.Student;
 db.enrollments = models.Enrollment;
+require("./references.model.js")(db);
 module.exports = db;
