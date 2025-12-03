@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
+
 var corsOptions = {
 origin: "http://localhost:8081"
 };
@@ -45,6 +46,10 @@ console.log("Failed to sync db: " + err.message);
 require("dotenv").config();
 // set port, listen for requests
 const PORT = process.env.NODE_DOCKER_PORT || 8080;
+
+const goodsgroupRoutes = require("./app/routes/goodsgroup.routes");
+app.use("/api/goodsgroup", goodsgroupRoutes);
+
 app.listen(PORT, () => {
 console.log(`Server is running on port ${PORT}.`);
 
