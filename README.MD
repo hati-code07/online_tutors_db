@@ -24,4 +24,4 @@ TutorConnect обеспечивает:
 - **Автоматизацию** рутинных процессов (бронирование, оплата, создание комнат).
 - **Безопасность** финансовых транзакций и данных пользователей.
 
-![alt text](https://github.com/hati-code07/online_tutors_db/blob/[main]/shemu.png?raw=true)
+![alt text](https://github.com/hati-code07/online_tutors_db/blob/[main]/png/shemu.png?raw=true)
