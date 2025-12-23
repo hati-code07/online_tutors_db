@@ -1,59 +1,65 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const express = require('express');
+const cors = require('cors');
 const app = express();
 
-var corsOptions = {
-origin: "http://localhost:8081"
-};
-app.use(cors(corsOptions));
-// parse requests of content-type - application/json
+app.use(cors());
 app.use(express.json());
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
-// simple route
-app.get("/", (req, res) => {
-res.json({ message: "Welcome to trade-app application." });
 
-app.get("/sync-db", async (req, res) => {
+// Главная
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Trade App API',
+    version: '1.0.0',
+    endpoints: [
+      'GET    /api/subjects',
+      'GET    /api/subjects/:id',
+      'POST   /api/subjects',
+      'PUT    /api/subjects/:id',
+      'DELETE /api/subjects/:id',
+      'GET    /api/tutors',
+      'GET    /api/courses',
+      'GET    /api/students',
+      'GET    /api/enrollments'
+    ]
+  });
+});
+
+// Функция для безопасной загрузки роутов
+const loadRoute = (routePath, apiPath) => {
   try {
-    const db = require("./app/modules");
-    await db.sequelize.sync({ force: false });
-    
-    const [tables] = await db.sequelize.query(
-      "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
-    );
-    
-    res.json({ 
-      message: "Database synced successfully",
-      tables: tables.map(t => t.table_name)
-    });
+    const route = require(`./app/routes/${routePath}`);
+    app.use(`/api/${apiPath}`, route);
+    console.log(`✅ ${apiPath} routes loaded`);
+    return true;
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(`⚠️  ${apiPath} routes not found: ${error.message}`);
+    // Простой fallback маршрут
+    app.get(`/api/${apiPath}`, (req, res) => {
+      res.json({ message: `${apiPath} API endpoint`, status: 'active' });
+    });
+    return false;
   }
+};
+
+// Загружаем все роуты
+loadRoute('subject.routes', 'subjects');
+loadRoute('tutor.routes', 'tutors');
+loadRoute('course.routes', 'courses');
+loadRoute('student.routes', 'students');
+loadRoute('enrollment.routes', 'enrollments');
+
+// Обработка 404
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.url} not found`
+  });
 });
 
-
-const db = require("./app/modules");
-db.sequelize.sync()
-.then(() => {
-console.log("Synced db.");
-})
-.catch((err) => {
-console.log("Failed to sync db: " + err.message);
-});
-});
-require("dotenv").config();
-// set port, listen for requests
-const PORT = process.env.NODE_DOCKER_PORT || 8080;
-
-const goodsgroupRoutes = require("./app/routes/goodsgroup.routes");
-app.use("/api/goodsgroup", goodsgroupRoutes);
-
+// Запуск сервера
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-console.log(`Server is running on port ${PORT}.`);
-
+  console.log(`🚀 Server started on http://localhost:${PORT}`);
+  console.log(`📁 App directory: ${__dirname}`);
 });
-
-
-
