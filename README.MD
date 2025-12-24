@@ -29,4 +29,4 @@ TutorConnect обеспечивает:
 
 
 
-![alt text](https://github.com/[hati-code07]/[online_tutors_db]/blob/[main]/shemu.png?raw=true)
+![alt text](image.png)
